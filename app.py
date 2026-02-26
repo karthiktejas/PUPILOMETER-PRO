@@ -1025,7 +1025,14 @@ def video_feed():
                 frame = processor.get_jpeg()
                 if frame: yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
             time.sleep(0.05)
-    return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(
+        gen(),
+        mimetype='multipart/x-mixed-replace; boundary=frame',
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive"
+        }
+    )
 
 @app.route('/data')
 def data(): return jsonify(current_data)
@@ -1152,3 +1159,4 @@ def new_session():
 if __name__ == '__main__':
     processor = None
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
+
